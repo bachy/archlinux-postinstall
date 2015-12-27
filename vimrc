@@ -1,0 +1,15 @@
+filetype plugin on
+
+set encoding=utf-8
+set directory=~/.vim/swp
+
+" last known cursor position
+" autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal g'\"" | endif
+
+" remove trailing whitespace
+autocmd BufWritePre * :%s/\s\+$//e
+
+syntax on
+set t_co=256
+let g:molokai_termcolors=256
+colorscheme molokai
