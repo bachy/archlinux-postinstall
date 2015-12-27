@@ -50,20 +50,20 @@ sudo sed -i.back 's/.*\[options\].*/&\nILoveCandy/' /etc/pacman.conf
 # bash & prompt
 echo 'Bash and Prompt'
 git clone https://github.com/hojhan/liquidprompt.git -o github /home/$USER/.liquidprompt
-cp $_cwd/bash_profile /home/$USER/.bash_profile
-cp $_cwd/bashrc /home/$USER/.bashrc
+cp $_cwd/assets/bash_profile /home/$USER/.bash_profile
+cp $_cwd/assets/bashrc /home/$USER/.bashrc
 mkdir /home/$USER/.config
-cp $_cwd/liquiprompt /home/$USER/.config/
-sudo pacman -S --needed --noconfirm bash-completion
+cp $_cwd/assets/liquiprompt /home/$USER/.config/
+# sudo pacman -S --needed --noconfirm bash-completion
 source /home/$USER/.bashrc
 
 # vim
 echo 'vim configuration'
 sleep 3
-cp $_cwp/vim /home/$USER/.vim
-cp $_cwd/vimrc /home/$USER/.vimrc
-sudo cp $_cwd/vim /root/.vim
-sudo cp $_cwd/vimrc /root/.vimrc
+cp $_cwp/assets/vim /home/$USER/.vim
+cp $_cwd/assets/vimrc /home/$USER/.vimrc
+sudo cp $_cwd/assets/vim /root/.vim
+sudo cp $_cwd/assets/vimrc /root/.vimrc
 
 echo 'Misc'
 sleep 3
@@ -76,9 +76,10 @@ sleep 3
 sudo pacman -S --needed --noconfirm bash-completion wget
 sudo mkdir /etc/bash_completion.d
 sudo wget -O /etc/bash_completion.d/git-completion.bash https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash
+
 echo 'increase inotify watch limit'
 sleep 3
-sudo cp $_cwd/90-inotify.conf /etc/sysctl.d/
+sudo cp $_cwd/assets/90-inotify.conf /etc/sysctl.d/
 
 # X server
 echo 'Installing Xorg server'
