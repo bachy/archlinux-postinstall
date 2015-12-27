@@ -1,0 +1,80 @@
+[global_config]
+  always_split_with_profile = True
+  borderless = True
+  enabled_plugins = InactivityWatch, LaunchpadCodeURLHandler, APTURLHandler, LaunchpadBugURLHandler
+  geometry_hinting = False
+  handle_size = 1
+  inactive_color_offset = 0.69
+  suppress_multiple_term_dialog = True
+  title_hide_sizetext = True
+  title_inactive_bg_color = "#2d2d2d"
+  title_inactive_fg_color = "#ffffff"
+  title_transmit_bg_color = "#616161"
+[keybindings]
+[layouts]
+  [[default]]
+    [[[child1]]]
+      parent = window0
+      type = Terminal
+    [[[window0]]]
+      parent = ""
+      type = Window
+  [[materio]]
+    [[[child0]]]
+      order = 0
+      parent = ""
+      position = 0:29
+      size = 1920, 1171
+      type = Window
+    [[[child1]]]
+      order = 0
+      parent = child0
+      position = 375
+      type = HPaned
+    [[[child2]]]
+      order = 0
+      parent = child1
+      position = 585
+      type = VPaned
+    [[[child5]]]
+      order = 1
+      parent = child1
+      position = 770
+      type = HPaned
+    [[[terminal3]]]
+      command = cd /home/bach/Sites/materio/base_d7_super/sites/all/themes/gui/materiobasetheme/ && bash || bash
+      order = 0
+      parent = child2
+      profile = default
+      type = Terminal
+    [[[terminal4]]]
+      command = ""
+      order = 1
+      parent = child2
+      profile = default
+      type = Terminal
+    [[[terminal6]]]
+      command = cd /home/bach/Sites/materio/base_d7_super/ && bash || bash
+      order = 0
+      parent = child5
+      profile = default
+      type = Terminal
+    [[[terminal7]]]
+      command = ""
+      order = 1
+      parent = child5
+      profile = default
+      type = Terminal
+[plugins]
+[profiles]
+  [[default]]
+    background_darkness = 0.92
+    background_image = None
+    background_type = transparent
+    font = Monospace 11
+    foreground_color = "#ffffff"
+    palette = "#000000:#aa0000:#00aa00:#aa5500:#0000aa:#aa00aa:#00aaaa:#aaaaaa:#555555:#ff5555:#55ff55:#ffff55:#5555ff:#ff55ff:#55ffff:#ffffff"
+    scrollback_infinite = True
+    scrollbar_position = hidden
+    show_titlebar = False
+    use_system_font = False

@@ -39,13 +39,8 @@ sudo sh -c "echo 'kernel.dmesg_restrict = 1' >> /etc/sysctl.d/50-dmesg-restrict.
 sudo touch /etc/sysctl.d/50-kptr-restrict.con
 sudo sh -c "echo 'kernel.kptr_restrict = 1' >> /etc/sysctl.d/50-kptr-restrict.conf"
 
-# Yaourt
-echo 'ask for editing config file before build'
-echo "EDITFILES=1" >> ~/.yaourtrc
-
 echo 'ILoveCandy'
 sudo sed -i.back 's/.*\[options\].*/&\nILoveCandy/' /etc/pacman.conf
-
 
 # bash & prompt
 echo 'Bash and Prompt'
@@ -81,9 +76,28 @@ echo 'increase inotify watch limit'
 sleep 3
 sudo cp $_cwd/assets/90-inotify.conf /etc/sysctl.d/
 
-# X server
-echo 'Installing Xorg server'
-echo -n "install Graphical Display ? [Y|n] "
+# Yaourt
+echo -n "install Yaourt [Y|n] "
+read yaourt
+yaourt=${yaourt:-y}
+if [ "$yaourt" == "y" ]; then
+  sudo pacman -S --needed base-devel
+  mkdir -p /home/$USER/Developer/Linux/build-repos
+  wget -O /home/$USER/Developer/Linux/build-repos/package-query.tar.gz https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
+  wget -O /home/$USER/Developer/Linux/build-repos/yaourt.tar.gz https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz
+  cd /home/$USER/Developer/Linux/build-repos
+  tar -xvf package-query.tar.gz
+  tar -xvf yaourt.tar.gz
+  cd package-query
+  makepkg -sri
+  cd ../yaourt
+  makepkg -sri
+  echo 'ask for editing config file before build'
+  echo "EDITFILES=1" >> ~/.yaourtrc
+fi
+
+# Display Manager
+echo -n "install Graphical Display Part 1 : Xorg server? [Y|n] "
 read yn
 yn=${yn:-y}
 if [ "$yn" == "y" ]; then
@@ -91,11 +105,34 @@ if [ "$yn" == "y" ]; then
   sudo pacman -S --needed --noconfirm mesa
   sudo pacman -S --needed --noconfirm xf86-video-intel
   sudo pacman -S --needed --noconfirm nvidia
+  sudo pacman -S --needed --noconfirm xorg-xinit
   sudo gpasswd -a $USER bumblebee
   sudo systemctl enable bumblebeed
   sudo reboot
 fi
 
+echo -n "install Graphical Display Part 2 : Kde Plasma 5? [Y|n] "
+read yn
+yn=${yn:-y}
+if [ "$yn" == "y" ]; then
+  sudo pacman -S --needed --noconfirm --force plasma-meta
+  sudo pacman -S --needed --noconfirm ttf-dejavu ttf-liberationi
+  sudo systemctl enable NetworkManager
+  sudo systemctl start NetworkManager
+fi
+
+echo "install basic packages? [Y|n]"
+read yn
+yn=${yn:-y}
+if [ "$yn" == "y" ]; then
+  sudo pacman -S --needed --noconfirm systemd-kcm bluedevil rfkill
+  sudo pacman -S --needed --noconfirm dolphin dolphin-plugins
+  sudo pacman -S --needed --noconfirm kmail korganizer kdeconnect
+  sudo pacman -S --needed --noconfirm chromium terminator
+  if [ "$yaourt" == "y" ]; then
+    yaourt -S atom-editor
+  fi
+fi
 
 echo 'Setup a gpg encripting'
 echo 'see https://wiki.archlinux.org/index.php/GnuPG'
