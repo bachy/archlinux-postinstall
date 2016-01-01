@@ -1,0 +1,14 @@
+[Debug]
+Tracer=dbus
+
+[%General]
+Driver=QMYSQL
+
+[QMYSQL]
+Host=localhost
+Name=akonadi
+Options=
+Password=akonadi
+ServerPath=/usr/bin/mysqld
+StartServer=false
+User=akonadi

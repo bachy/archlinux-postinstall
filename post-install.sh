@@ -1,5 +1,4 @@
-#! /
-bin/sh
+#! /bin/sh
 
 echo 'Arch Linux Postinstall'
 
@@ -27,6 +26,17 @@ if [ "$yn" == "y" ]; then
 	su "$user"
 fi
 
+
+# GPG
+echo 'Setup a gpg encripting'
+echo 'see https://wiki.archlinux.org/index.php/GnuPG'
+echo -n "create your gpg encrypting key? [Y|n] "
+read yn
+yn=${yn:-y}
+if [ "$yn" == "y" ]; then
+  gpg --full-gen-key
+fi
+
 # remove root autologin
 sudo sed -i.back 's/--autologin root //' /etc/systemd/system/getty@tty1.service.d/autologin.conf
 # remove root login
@@ -41,6 +51,7 @@ sudo sh -c "echo 'kernel.kptr_restrict = 1' >> /etc/sysctl.d/50-kptr-restrict.co
 
 echo 'ILoveCandy'
 sudo sed -i.back 's/.*\[options\].*/&\nILoveCandy/' /etc/pacman.conf
+sudo sed -i.back 's/^#Color$/Color/' /etc/pacman.conf
 
 # bash & prompt
 echo 'Bash and Prompt'
@@ -100,17 +111,29 @@ sudo systemctl enable bluetooth
 sudo systemctl start bluetooth
 
 # misc
-sudo pacman -S --needed --noconfirm rsync acpi parted imagemagick
+sudo pacman -S --needed --noconfirm rsync acpi parted imagemagick lynx alsa-utils
 
+if [ "$yaourt" == "y" ]; then
+  yaourt -S downgrade
+fi
+
+# Display Manager
+echo -n "Switch linux kernel to long term support version (more stable)? [Y|n] "
+read yn
+yn=${yn:-y}
+if [ "$yn" == "y" ]; then
+  sudo pacman -S linux-lts linux-lts-headers
+
+fi
 # Display Manager
 echo -n "install Graphical Display Part 1 : Xorg server (you will have to reboot at the end of part 1)? [Y|n] "
 read yn
 yn=${yn:-y}
 if [ "$yn" == "y" ]; then
-  sudo pacman -S --needed --noconfirm bumblebee
-  sudo pacman -S --needed --noconfirm mesa
   sudo pacman -S --needed --noconfirm xf86-video-intel
   sudo pacman -S --needed --noconfirm nvidia
+  sudo pacman -S --needed --noconfirm bbswitch bumblebee
+  sudo pacman -S --needed --noconfirm mesa mesa-demos
   sudo pacman -S --needed --noconfirm xorg-xinit
   sudo gpasswd -a $USER bumblebee
   sudo systemctl enable bumblebeed
@@ -122,7 +145,7 @@ read yn
 yn=${yn:-y}
 if [ "$yn" == "y" ]; then
   sudo pacman -S --needed --noconfirm --force plasma-meta
-  sudo pacman -S --needed --noconfirm ttf-dejavu ttf-liberationi ttf-droid
+  sudo pacman -S --needed --noconfirm ttf-{dejavu,liberationi,droid,ubuntu-font-family}
 fi
 
 echo "install basic packages? [Y|n]"
@@ -131,19 +154,41 @@ yn=${yn:-y}
 if [ "$yn" == "y" ]; then
   sudo pacman -S --needed --noconfirm systemd-kcm bluedevil
   sudo pacman -S --needed --noconfirm dolphin dolphin-plugins
-  sudo pacman -S --needed --noconfirm kmail korganizer kdeconnect pidgin
-  sudo pacman -S --needed --noconfirm chromium terminator gparted
-  sudo pacman -S --needed --noconfirm digikam
+  echo 'install pim softwares'
+  sudo pacman -S --needed --noconfirm kmail korganizer kaddressbook kdeconnect pidgin
+  sudo pacman -S --needed --noconfirm spamassassin razor
+  sudo sa-update
+  echo "configure akonadi to use system wide sql server"
+  # https://forum.kde.org/viewtopic.php?t=84478#p140762
+  echo "please type your root mysql pass-word :"
+  read -s -p Password: pswd
+  mysql -u root -p$pswd -e "create database akonadi;"
+  mysql -u root -p$pswd -e "create user 'akonadi'@'localhost' identified by 'akonadi';"
+  mysql -u root -p$pswd -e "grant all privileges on akonadi.* to 'akonadi'@'localhost';"
+  mysql -u root -p$pswd -e "flush privileges;"
+  mv /home/$USER/.config/akonadi/akonadiserverrc /home/$USER/.config/akonadi/akonadiserverrc.back
+  cp $_cwd/assets/akonadiserverrc /home/$USER/.config/akonadi/
+
+  sudo pacman -S --needed --noconfirm chromium terminator gparted keepass
+  echo 'install office softwares'
+  sudo pacman -S --needed --noconfirm gwenview okular kipi-plugins libreoffice-fresh hunspell-{fr,en}
+  echo 'install media softwares'
+  sudo pacman -S --needed --noconfirm digikam darktable vlc lua-socket ktorrent banshee
+  echo 'install graphic softwares'
+  sudo pacman -S --needed --noconfirm inkscape gimp scribus fontforge blender
+  #echo 'install some more fonts'
+  #sudo pacman -S ttf-{,}
+  echo 'install cloud softwares'
+  sudo pacman -S --needed --noconfirm owncloud-client syncthing syncthing-gtk syncthing-inotify
+  echo 'increase inotify watch limit'
+  sleep 3
+  sudo cp $_cwd/assets/90-inotify.conf /etc/sysctl.d/
+
   if [ "$yaourt" == "y" ]; then
     yaourt -S atom-editor
   fi
 fi
 
-# cloud
-sudo pacman -S --needed --noconfirm owncloud-client syncthings
-echo 'increase inotify watch limit'
-sleep 3
-sudo cp $_cwd/assets/90-inotify.conf /etc/sysctl.d/
 
 # LAMP
 # https://wiki.archlinux.org/index.php/Apache_HTTP_Server
@@ -181,17 +226,6 @@ if [ "$yn" == "y" ]; then
   sudo sed -i.back 's/^open_basedir = .*$/&:\/etc\/webapps\//' /etc/php/php.ini
   # todo : add custom basedir
   # todo : instal drush
-fi
-
-
-# GPG
-echo 'Setup a gpg encripting'
-echo 'see https://wiki.archlinux.org/index.php/GnuPG'
-echo -n "create your gpg encrypting key? [Y|n] "
-read yn
-yn=${yn:-y}
-if [ "$yn" == "y" ]; then
-  gpg --full-gen-key
 fi
 
 # END

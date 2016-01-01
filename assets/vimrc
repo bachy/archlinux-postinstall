@@ -13,3 +13,5 @@ syntax on
 set t_co=256
 let g:molokai_termcolors=256
 colorscheme molokai
+
+set number
