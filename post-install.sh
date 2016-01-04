@@ -92,7 +92,7 @@ alpi_basics(){
   read yn
   yn=${yn:-y}
   if [ "$yn" == "y" ]; then
-    sudo pacman -S --needed --noconfirm vim rsync acpi parted imagemagick lynx wget alsa-utils tmux git openssh knockd avahi nss-mdns
+    sudo pacman -S --needed --noconfirm vim rsync acpi parted imagemagick lynx wget alsa-utils tmux git openssh knockd avahi nss-mdns bluez-utils htop
     print_msg 'securing ssh'
     sed -i.back 's/^#PermitEmptyPasswords.*/PermitEmptyPasswords no/'
     sed -i.back 's/^#PermitRootLogin.*/PermitRootLogin no/'
@@ -272,8 +272,8 @@ alpi_kernellts(){
   read yn
   yn=${yn:-y}
   if [ "$yn" == "y" ]; then
-    sudo pacman -S linux-lts linux-lts-headers nvidia-lts
-    sudo grub-mkconfig -o /boot/grub/grub.cfg
+    sudo pacman -S linux-lts linux-lts-headers nvidia-lts bbswitch-lts
+    #sudo grub-mkconfig -o /boot/grub/grub.cfg
     print_msg "kernel LTS install complete!"
   fi
 }
