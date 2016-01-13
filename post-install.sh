@@ -92,7 +92,7 @@ alpi_basics(){
   read yn
   yn=${yn:-y}
   if [ "$yn" == "y" ]; then
-    sudo pacman -S --needed --noconfirm vim rsync acpi parted imagemagick lynx wget alsa-utils tmux git openssh knockd avahi nss-mdns bluez-utils htop
+    sudo pacman -S --needed --noconfirm vim rsync acpi parted imagemagick lynx wget alsa-utils tmux git openssh knockd bluez-utils htop
     print_msg 'securing ssh'
     sed -i.back 's/^#PermitEmptyPasswords.*/PermitEmptyPasswords no/'
     sed -i.back 's/^#PermitRootLogin.*/PermitRootLogin no/'
