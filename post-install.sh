@@ -59,7 +59,7 @@ print_title 'Arch Linux Postinstall'
 _cwd="$(pwd)"
 
 alpi_user(){
-  print_title "Apache Mysql Php"
+  print_title "User"
   print_question "Create new user? [Y|n]"
   read yn
   yn=${yn:-y}
@@ -210,7 +210,7 @@ alpi_plasma5(){
     sudo pacman -S --needed --noconfirm --force plasma-meta
     sudo pacman -S --needed --noconfirm ttf-{dejavu,liberation,droid,ubuntu-font-family}
     # network & Bluetooth
-    sudo pacman -S --needed --noconfirm networkmanager-openvpn pulseaudio-alsa rfkill systemd-kcm bluedevil
+    sudo pacman -S --needed --noconfirm networkmanager-openvpn pulseaudio-alsa pulseaudio-dlna rfkill systemd-kcm bluedevil
     sudo systemctl enable NetworkManager
     sudo systemctl start NetworkManager
     sudo systemctl enable bluetooth
@@ -336,6 +336,9 @@ alpi_defaultpkgs(){
 
     print_msg 'install graphic softwares'
     sudo pacman -S --needed --noconfirm inkscape gimp scribus fontforge blender
+
+    print_msg 'web dev softwares'
+    sudo pacman -S --needed --noconfirm firefox filezilla gulp
 
     print_msg 'install cloud softwares'
     sudo pacman -S --needed --noconfirm owncloud-client syncthing syncthing-gtk syncthing-inotify
