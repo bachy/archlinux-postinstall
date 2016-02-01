@@ -122,7 +122,7 @@ alpi_cosmetics(){
 
   # bash & prompt
   print_msg 'Bash and Prompt (liquidprompt)'
-  git clone https://github.com/hojhan/liquidprompt.git -o github /home/$USER/.liquidprompt
+  git clone https://github.com/nojhan/liquidprompt.git -o github /home/$USER/.liquidprompt
   cp $_cwd/assets/bash_profile /home/$USER/.bash_profile
   cp $_cwd/assets/bashrc /home/$USER/.bashrc
   mkdir /home/$USER/.config
