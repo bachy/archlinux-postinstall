@@ -94,8 +94,8 @@ alpi_basics(){
   if [ "$yn" == "y" ]; then
     sudo pacman -S --needed --noconfirm vim rsync acpi parted imagemagick lynx wget alsa-utils tmux git openssh knockd bluez-utils htop
     print_msg 'securing ssh'
-    sed -i.back 's/^#PermitEmptyPasswords.*/PermitEmptyPasswords no/'
-    sed -i.back 's/^#PermitRootLogin.*/PermitRootLogin no/'
+    sed -i.back 's/^#PermitEmptyPasswords.*/PermitEmptyPasswords no/' /etc/ssh/sshd_config
+    sed -i.back 's/^#PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
     sudo systemctl enable sshd
     sudo systemctl start sshd
     alpi_avahi
@@ -364,7 +364,7 @@ alpi_lamp(){
   read yn
   yn=${yn:-y}
   if [ "$yn" == "y" ]; then
-    sudo pacman -S --needed --noconfirm apache php php-apache phpmyadmin php-mcrypt
+    sudo pacman -S --needed --noconfirm apache php php-apache phpmyadmin php-mcrypt php-gd
     print_question "Should we install and configure mysql (if not already done)? [y|N] "
     read sql
     sql=${sql:-n}
