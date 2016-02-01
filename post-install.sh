@@ -210,7 +210,7 @@ alpi_plasma5(){
     sudo pacman -S --needed --noconfirm --force plasma-meta
     sudo pacman -S --needed --noconfirm ttf-{dejavu,liberation,droid,ubuntu-font-family}
     # network & Bluetooth
-    sudo pacman -S --needed --noconfirm networkmanager-openvpn pulseaudio-alsa pulseaudio-dlna rfkill systemd-kcm bluedevil
+    sudo pacman -S --needed --noconfirm networkmanager-openvpn pulseaudio-alsa rfkill systemd-kcm bluedevil
     sudo systemctl enable NetworkManager
     sudo systemctl start NetworkManager
     sudo systemctl enable bluetooth
@@ -350,6 +350,7 @@ alpi_defaultpkgs(){
       then
         yaourt -S downgrade
         yaourt -S atom-editor
+        yaourt -S pulseaudio-dlna
       else
         print_warning "some packages can't be installed because you don't have yaourt installed"
     fi
