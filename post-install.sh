@@ -190,12 +190,13 @@ alpi_xserver(){
     sudo pacman -S --needed --noconfirm bbswitch bumblebee primus
     sudo pacman -S --needed --noconfirm nvidia nvidia-utils
     # xorg server
-    sudo pacman -S --needed --noconfirm xorg-xinit xorg-server-devel
+    sudo pacman -S --needed --noconfirm xorg-xinit xorg-server-devel xorg-xrandr
     sudo pacman -S --needed --noconfirm mesa mesa-demos
+    # config
     sudo gpasswd -a $USER bumblebee
     sudo systemctl enable bumblebeed
     print_warning "xorg install complete, after reboot, please run part 2 : Desktop manager Plasma5"
-    print_warnig "press enter to reboot"
+    print_warning "press enter to reboot"
     read x
     sudo reboot
   fi
@@ -273,7 +274,7 @@ alpi_kernellts(){
   yn=${yn:-y}
   if [ "$yn" == "y" ]; then
     sudo pacman -S linux-lts linux-lts-headers nvidia-lts bbswitch-lts
-    #sudo grub-mkconfig -o /boot/grub/grub.cfg
+    # TODO : add entrie for lts kernel on /boot/loader/entries
     print_msg "kernel LTS install complete!"
   fi
 }
