@@ -409,6 +409,45 @@ alpi_lamp(){
   fi
 }
 
+alpi_bumblebee(){
+  # https://wiki.archlinux.org/index.php/Bumblebee
+  print_title "Bumblebee"
+  print_question "Install Bumblebee? [Y|n] "
+  read yn
+  yn=${yn:-y}
+  if [ "$yn" == "y" ]; then
+    sudo pacman -S --needed --no-confirm bumblebee nvidia
+    sudo gpasswd -a $USER bumblebee
+    sudo systemctl enable bumblebeed
+    sudo systemctl start bumblebeed
+    sudo pacman -S --needed --no-confirm mesa-demo
+    print_msg "run optirun glxgears --info to test your install"
+    print_msg "Install primus bridge for better performances"
+    sudo pacman -S --needed --no-confirm primus lib32-primus
+    sudo sed -i.back 's/^Bridge=auto$/Bridge=primus/' /etc/bumblebee/bumblebee.conf
+    print_msg "Install bbswitch to turn on and off discret card automatically (only for laptops)"
+    sudo pacman -S --needed --no-confirm bbswitch
+  fi
+}
+
+alpi_steam(){
+  # https://wiki.archlinux.org/index.php/Steam
+  print_title "Steam"
+  print_question "Install steam? [Y|n] "
+  read yn
+  yn=${yn:-y}
+  if [ "$yn" == "y" ]; then
+    alpi_bumblebee
+    print_msg "Enable Multilib repository package"
+    sudo sed -i.back 's/^#[multilib]$/[multilib]/' /etc/pacman.conf
+    sudo sed -i.back 's/^#Include = \/etc/pacman\.d\/mirrorlist$/Include = /etc/pacman.d/mirrorlis/' /etc/pacman.conf
+    sudo pacman -Syy
+    sudo pacman -S --needed --no-confirm lib32-virtualgl lib32-mesa-libgl lib32-nvidia-utils lib32-alsa-plugins ttf-liberation lib32-curl
+    sudo pacman -S --needed --no-confirm steam
+  fi
+}
+
+
 # END
 alpi_end(){
   print_question "Reboot now? [Y|n] "
@@ -428,7 +467,7 @@ alpi_menu(){
   do
     print_question "choose an action (preferably in proposed order)"
     echo
-    action_list=("create user" "install basics" "cosmetics" "create gnupgp key" "secure the system" "install Xorg Server" "install Plasma 5 (kde)" "yaourt" "cups (printers)" "switch to LTS kernel" "install default packages" "install lamp" "end");
+    action_list=("create user" "install basics" "cosmetics" "create gnupgp key" "secure the system" "install Xorg Server" "install Plasma 5 (kde)" "yaourt" "cups (printers)" "switch to LTS kernel" "install default packages" "install lamp" "install bumblebee" "install steam" "end");
     select action in "${action_list[@]}"; do
       case "$REPLY" in
         1)
@@ -468,6 +507,12 @@ alpi_menu(){
           alpi_lamp
           ;;
         13)
+          alpi_bumblebee
+          ;;
+        14)
+          alpi_steam
+          ;;
+        15)
           alpi_end
           ;;
         *)
