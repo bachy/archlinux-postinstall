@@ -70,16 +70,21 @@ alpi_user(){
     chfn ${username}
     passwd ${username}
     print_msg "user $username created"
+    pacman -S --needed --no-confirm sudo
     echo "$username	ALL=(ALL) ALL" >> /etc/sudoers
     print_msg "$username added to sudoers"
-    print_msg "switching now to $username"
-    su ${username}
+    print_question "switch now to $username? you'll have to restart the script [Y|n]"
+    read yn
+    yn=${yn:-y}
+    if [ "$yn" == "y" ]; then
+      su ${username}
+    fi
   fi
 }
 
 alpi_avahi(){
   print_msg "install avahi"
-  sudo pacman -S --needed --noconfirm avahi nss-mdns
+  sudo pacman -S --needed --noconfirm -q avahi nss-mdns
   print_msg "configure avahi"
   sudo systemctl enable avahi-daemon
   sudo systemctl start avahi-deamon
@@ -92,10 +97,10 @@ alpi_basics(){
   read yn
   yn=${yn:-y}
   if [ "$yn" == "y" ]; then
-    sudo pacman -S --needed --noconfirm vim rsync acpi parted imagemagick lynx wget alsa-utils tmux git openssh knockd bluez-utils htop
+    sudo pacman -S --needed --noconfirm -q vim rsync acpi parted imagemagick lynx wget alsa-utils tmux git openssh knockd bluez-utils htop
     print_msg 'securing ssh'
-    sed -i.back 's/^#PermitEmptyPasswords.*/PermitEmptyPasswords no/' /etc/ssh/sshd_config
-    sed -i.back 's/^#PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+    sudo sed -i.back 's/^#PermitEmptyPasswords.*/PermitEmptyPasswords no/' /etc/ssh/sshd_config
+    sudo sed -i.back 's/^#PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
     sudo systemctl enable sshd
     sudo systemctl start sshd
     alpi_avahi
@@ -109,14 +114,14 @@ alpi_cosmetics(){
   alpi_basics
   # vim
   print_msg 'vim configuration'
-  sudo pacman -S --needed --noconfirm vim-{spell-fr,spell-en,nerdtree,supertab,systemd}
-  cp $_cwp/assets/vim /home/$USER/.vim
+  sudo pacman -S --needed --noconfirm -q vim-{spell-fr,spell-en,nerdtree,supertab,systemd}
+  cp -r $_cwp/assets/vim /home/$USER/.vim
   cp $_cwd/assets/vimrc /home/$USER/.vimrc
   sudo cp $_cwd/assets/vim /root/.vim
   sudo cp $_cwd/assets/vimrc /root/.vimrc
 
   print_msg 'Git Completion'
-  sudo pacman -S --needed --noconfirm bash-completion
+  sudo pacman -S --needed --noconfirm -q bash-completion
   sudo mkdir /etc/bash_completion.d
   sudo wget -O /etc/bash_completion.d/git-completion.bash https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash
 
@@ -126,8 +131,8 @@ alpi_cosmetics(){
   cp $_cwd/assets/bash_profile /home/$USER/.bash_profile
   cp $_cwd/assets/bashrc /home/$USER/.bashrc
   mkdir /home/$USER/.config
-  cp $_cwd/assets/config/liquipromptrc /home/$USER/.config/
-  # sudo pacman -S --needed --noconfirm bash-completion
+  cp $_cwd/assets/config/liquidpromptrc /home/$USER/.config/
+  # sudo pacman -S --needed --noconfirm -q bash-completion
   source /home/$USER/.bashrc
 
   touch /home/$USER/.inputrc
@@ -183,15 +188,15 @@ alpi_xserver(){
   yn=${yn:-y}
   if [ "$yn" == "y" ]; then
     # touch pad
-    sudo pacman -S --needed --noconfirm xf86-input-libinput
+    sudo pacman -S --needed --noconfirm -q xf86-input-libinput
     # integred gpu
-    sudo pacman -S --needed --noconfirm xf86-input-libinput xf86-video-intel
+    sudo pacman -S --needed --noconfirm -q xf86-input-libinput xf86-video-intel
     # discret gpu
-    sudo pacman -S --needed --noconfirm bbswitch bumblebee primus
-    sudo pacman -S --needed --noconfirm nvidia nvidia-utils
+    sudo pacman -S --needed --noconfirm -q bbswitch bumblebee primus
+    sudo pacman -S --needed --noconfirm -q nvidia nvidia-utils
     # xorg server
-    sudo pacman -S --needed --noconfirm xorg-xinit xorg-server-devel xorg-xrandr
-    sudo pacman -S --needed --noconfirm mesa mesa-demos
+    sudo pacman -S --needed --noconfirm -q xorg-xinit xorg-server-devel xorg-xrandr
+    sudo pacman -S --needed --noconfirm -q mesa mesa-demos
     # config
     sudo gpasswd -a $USER bumblebee
     sudo systemctl enable bumblebeed
@@ -208,10 +213,10 @@ alpi_plasma5(){
   read yn
   yn=${yn:-y}
   if [ "$yn" == "y" ]; then
-    sudo pacman -S --needed --noconfirm --force plasma-meta
-    sudo pacman -S --needed --noconfirm ttf-{dejavu,liberation,droid,ubuntu-font-family}
+    sudo pacman -S --needed --noconfirm -q --force plasma-meta
+    sudo pacman -S --needed --noconfirm -q ttf-{dejavu,liberation,droid,ubuntu-font-family}
     # network & Bluetooth
-    sudo pacman -S --needed --noconfirm networkmanager-openvpn pulseaudio-alsa rfkill systemd-kcm bluedevil
+    sudo pacman -S --needed --noconfirm -q networkmanager-openvpn pulseaudio-alsa rfkill systemd-kcm bluedevil
     sudo systemctl enable NetworkManager
     sudo systemctl start NetworkManager
     sudo systemctl enable bluetooth
@@ -253,9 +258,9 @@ alpi_cups(){
   read yn
   yn=${yn:-y}
   if [ "$yn" == "y" ]; then
-    sudo pacman -S --needed --noconfirm cups cups-filters libcups ghostscript gsfonts
-    sudo pacman -S --needed --noconfirm gutenprint splix cups-pdf
-    sudo pacman -S --needed --noconfirm print-manager
+    sudo pacman -S --needed --noconfirm -q cups cups-filters libcups ghostscript gsfonts
+    sudo pacman -S --needed --noconfirm -q gutenprint splix cups-pdf
+    sudo pacman -S --needed --noconfirm -q print-manager
     alpi_avahi
     sudo systemctl enable org.cups.cupsd
     sudo systemctl start org.cups.cupsd
@@ -281,7 +286,7 @@ alpi_kernellts(){
 
 alpi_mysql(){
     print_msg "installe mysql"
-    sudo pacman -S --needed --noconfirm mariadb
+    sudo pacman -S --needed --noconfirm -q mariadb
     print_msg "configure mysql"
     sudo mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
     mysql_secure_installation
@@ -297,10 +302,10 @@ alpi_defaultpkgs(){
   yn=${yn:-y}
   if [ "$yn" == "y" ]; then
     print_msg "file explorer : Dolphin"
-    sudo pacman -S --needed --noconfirm dolphin dolphin-plugins
+    sudo pacman -S --needed --noconfirm -q dolphin dolphin-plugins
     print_msg 'Pim softwares : mail, calendar, contact, etc'
-    sudo pacman -S --needed --noconfirm kmail korganizer kaddressbook kdeconnect kleopatra pidgin
-    sudo pacman -S --needed --noconfirm spamassassin razor
+    sudo pacman -S --needed --noconfirm -q kmail korganizer kaddressbook kdeconnect kleopatra pidgin
+    sudo pacman -S --needed --noconfirm -q spamassassin razor
     sudo sa-update
 
     print_question "Install regular mysql support for akonadi? [Y|n] "
@@ -328,21 +333,21 @@ alpi_defaultpkgs(){
     fi
 
     print_msg "web browser, terminal emulator, disk tool, password tool"
-    sudo pacman -S --needed --noconfirm chromium terminator gparted keepass
+    sudo pacman -S --needed --noconfirm -q chromium terminator gparted keepass
 
     print_msg 'install office softwares'
-    sudo pacman -S --needed --noconfirm gwenview kimageformats kdegraphics-okular kipi-plugins libreoffice-fresh hunspell-{fr,en}
+    sudo pacman -S --needed --noconfirm -q gwenview kimageformats kdegraphics-okular kipi-plugins libreoffice-fresh hunspell-{fr,en}
     print_msg 'install media softwares'
-    sudo pacman -S --needed --noconfirm digikam darktable vlc lua-socket ktorrent banshee
+    sudo pacman -S --needed --noconfirm -q digikam darktable vlc lua-socket ktorrent banshee
 
     print_msg 'install graphic softwares'
-    sudo pacman -S --needed --noconfirm inkscape gimp scribus fontforge blender
+    sudo pacman -S --needed --noconfirm -q inkscape gimp scribus fontforge blender
 
     print_msg 'web dev softwares'
-    sudo pacman -S --needed --noconfirm firefox filezilla gulp
+    sudo pacman -S --needed --noconfirm -q firefox filezilla gulp
 
     print_msg 'install cloud softwares'
-    sudo pacman -S --needed --noconfirm owncloud-client syncthing syncthing-gtk syncthing-inotify
+    sudo pacman -S --needed --noconfirm -q owncloud-client syncthing syncthing-gtk syncthing-inotify
     print_msg 'increase inotify watch limit'
     sleep 3
     sudo cp $_cwd/assets/90-inotify.conf /etc/sysctl.d/
@@ -366,7 +371,7 @@ alpi_lamp(){
   read yn
   yn=${yn:-y}
   if [ "$yn" == "y" ]; then
-    sudo pacman -S --needed --noconfirm apache php php-apache phpmyadmin php-mcrypt php-gd
+    sudo pacman -S --needed --noconfirm -q apache php php-apache phpmyadmin php-mcrypt php-gd
     print_question "Should we install and configure mysql (if not already done)? [y|N] "
     read sql
     sql=${sql:-n}
