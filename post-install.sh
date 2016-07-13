@@ -140,9 +140,13 @@ alpi_cosmetics(){
   echo 'set show-all-if-ambiguous on' >> /home/$USER/.inputrc
   echo 'set completion-ignore-case on' >> /home/$USER/.inputrc
 
-  print_msg "ILoveCandy (pacman)"
+  print_msg "I love candy! (pacman)"
   sudo sed -i.back 's/^#Color$/Color/' /etc/pacman.conf
-  sudo sed -i.back 's/.*\[options\].*/&\nILoveCandy/' /etc/pacman.conf
+  sudo sed -i.back 's/^#TotalDownload$/TotalDownload\nILoveCandy/' /etc/pacman.conf
+  # sudo sed -i.back 's/.*\[options\].*/&\nILoveCandy/' /etc/pacman.conf
+
+  print_msg "Bins"
+  cp -r $_cwd/assets/bin /home/$USER/.bin
 
   print_msg 'Config and Cosmetics done'
 }
@@ -335,7 +339,7 @@ alpi_defaultpkgs(){
     fi
 
     print_msg "web browser, terminal emulator, disk tool, password tool"
-    sudo pacman -S --needed --noconfirm -q chromium terminator gparted keepass
+    sudo pacman -S --needed --noconfirm -q chromium terminator gparted keepassx2
 
     print_msg 'install office softwares'
     sudo pacman -S --needed --noconfirm -q gwenview kimageformats kdegraphics-okular kipi-plugins libreoffice-fresh hunspell-{fr,en}
