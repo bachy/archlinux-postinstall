@@ -56,7 +56,7 @@ print_warning() {
 
 print_title 'Arch Linux Postinstall'
 
-_cwd="$(pwd)"
+
 
 alpi_user(){
   print_title "User"
@@ -88,7 +88,7 @@ alpi_avahi(){
   print_msg "configure avahi"
   sudo systemctl enable avahi-daemon
   sudo systemctl start avahi-deamon
-  sed -i.back 's/hosts: files dns myhostname/hosts: files mdns_minimal [NOTFOUND=return] dns myhostname/' /etc/nsswitch.conf
+  sudo sed -i.back 's/hosts: files dns myhostname/hosts: files mdns_minimal [NOTFOUND=return] dns myhostname/' /etc/nsswitch.conf
 }
 
 alpi_basics(){
@@ -112,6 +112,7 @@ alpi_basics(){
 alpi_cosmetics(){
   print_title "apply pacman, bash, vim and git config (needs basic pkgs install)"
   alpi_basics
+  _cwd="$(pwd)"
   # vim
   print_msg 'vim configuration'
   sudo pacman -S --needed --noconfirm -q vim-{spell-fr,spell-en,nerdtree,supertab,systemd}
@@ -139,9 +140,9 @@ alpi_cosmetics(){
   echo 'set show-all-if-ambiguous on' >> /home/$USER/.inputrc
   echo 'set completion-ignore-case on' >> /home/$USER/.inputrc
 
-  print_msg 'ILoveCandy (pacman)'
-  sudo sed -i.back 's/.*\[options\].*/&\nILoveCandy/' /etc/pacman.conf
+  print_msg "ILoveCandy (pacman)"
   sudo sed -i.back 's/^#Color$/Color/' /etc/pacman.conf
+  sudo sed -i.back 's/.*\[options\].*/&\nILoveCandy/' /etc/pacman.conf
 
   print_msg 'Config and Cosmetics done'
 }
@@ -301,6 +302,7 @@ alpi_defaultpkgs(){
   read yn
   yn=${yn:-y}
   if [ "$yn" == "y" ]; then
+    _cwd="$(pwd)"
     print_msg "file explorer : Dolphin"
     sudo pacman -S --needed --noconfirm -q dolphin dolphin-plugins
     print_msg 'Pim softwares : mail, calendar, contact, etc'
