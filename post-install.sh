@@ -409,7 +409,7 @@ alpi_lamp(){
     print_msg "Install Sites folder"
     mkdir /home/$USER/Sites
     cp $_cwd/assets/vhosts/dev.conf
-    sudo sed 's/USER/$USER/g' /etc/httpd/conf/vhosts/dev.conf
+    sudo sed -i "s/USER/$USER/g" /etc/httpd/conf/vhosts/dev.conf
     print_msg "configure apache for php"
     sudo sed -i.back 's/^LoadModule dir_module modules\/mod_dir\.so$/&\nLoadModule php5_module modules\/libphp5.so/' /etc/httpd/conf/httpd.conf
     sudo sh -c "echo 'Include conf/extra/php5_module.conf' >> /etc/httpd/conf/httpd.conf"
