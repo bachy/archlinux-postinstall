@@ -116,7 +116,7 @@ alpi_cosmetics(){
   # vim
   print_msg 'vim configuration'
   sudo pacman -S --needed --noconfirm -q vim-{spell-fr,spell-en,nerdtree,supertab,systemd}
-  cp -r $_cwp/assets/vim /home/$USER/.vim
+  cp -r $_cwd/assets/vim /home/$USER/.vim
   cp $_cwd/assets/vimrc /home/$USER/.vimrc
   sudo cp -r $_cwd/assets/vim /root/.vim
   sudo cp $_cwd/assets/vimrc /root/.vimrc
@@ -202,12 +202,14 @@ alpi_xserver(){
     # sudo pacman -S --needed --noconfirm -q bbswitch bumblebee primus
     # sudo pacman -S --needed --noconfirm -q nvidia nvidia-utils
     # xorg server
-    sudo pacman -S --needed --noconfirm -q xorg-{server,xinit,server-utils,server-devel,xrandr}
+    sudo pacman -S --needed --noconfirm -q xorg-{server,xinit,server-utils,server-devel,xrandr,xclock} xterm
     sudo pacman -S --needed --noconfirm -q mesa mesa-{libgl,demos}
-    # config
-    # sudo gpasswd -a $USER bumblebee
-    # sudo systemctl enable bumblebeed
-    print_warning "xorg install complete, after reboot, please run part 2 : Desktop manager Plasma5"
+    sudo pacman -S --needed --noconfirm -q
+    # xinitrc
+    touch /home/$USER/.xinitrc
+    cat /etc/X11/xinit/xinitrc > /home/$USER/
+    print_warning "xorg install complete, reboot and run startx to test xorg"
+    print_warning "run part 2 after reboot if you need kde : Desktop manager Plasma5"
     print_warning "press enter to reboot"
     read x
     sudo reboot
@@ -220,20 +222,32 @@ alpi_plasma5(){
   read yn
   yn=${yn:-y}
   if [ "$yn" == "y" ]; then
+    print_msg "plasma"
     sudo pacman -S --needed --noconfirm -q --force plasma-meta
+    print_msg "fonts"
     sudo pacman -S --needed --noconfirm -q ttf-{dejavu,liberation,droid,ubuntu-font-family}
-    # network & Bluetooth
+    print_msg "network & Bluetooth"
     sudo pacman -S --needed --noconfirm -q networkmanager-openvpn pulseaudio-alsa rfkill systemd-kcm bluedevil
-    # sudo systemctl enable NetworkManager
-    # sudo systemctl start NetworkManager
-    # sudo systemctl enable bluetooth
-    # sudo systemctl start bluetooth
-    # TODO xinitrc
-    # touch /home/$USER/.xinitrc
-    # cat /etc/X11/xinit/xinitrc > /home/$USER/
+
+    print_msg "plasma addons"
+    sudo pacman -S --needed --noconfirm -q kdeplasma-addons
+    print_msg "file explorer : Dolphin"
+    sudo pacman -S --needed --noconfirm -q dolphin dolphin-plugins ark unzip zip
+    print_msg 'kleopatra and spectacle'
+    sudo pacman -S --needed --noconfirm -q kleopatra spectacle
+    print_msg "web browser, terminal emulator, disk tool, password tool"
+    sudo pacman -S --needed --noconfirm -q chromium terminator gparted keepassx2
+
+    sudo systemctl enable NetworkManager
+    sudo systemctl start NetworkManager
+    sudo systemctl enable bluetooth
+    sudo systemctl start bluetooth
+
+    # TODO start kde with xinitrc
     # echo 'exec startkde' > /home/$USER/.xinitrc
+
     print_msg "Plasma 5 install complete!"
-    print_msg 'run "startx" to start x server with kde plasma 5'
+    print_msg 'add startkde on ~/.xinitrc then run "startx" to start x server with kde plasma 5'
   fi
 }
 
@@ -298,6 +312,7 @@ alpi_mysql(){
     sudo pacman -S --needed --noconfirm -q mariadb
     print_msg "configure mysql"
     sudo mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
+    sudo systemctl start mysqld
     mysql_secure_installation
     sudo sed -i.back 's/^log-bin=mysql-bin$/#&/' /etc/mysql/my.cnf
     sudo sed -i.back 's/^max_allowed_packet.*$/max_allowed_packet = 16M/' /etc/mysql/my.cnf
@@ -311,12 +326,8 @@ alpi_defaultpkgs(){
   yn=${yn:-y}
   if [ "$yn" == "y" ]; then
     _cwd="$(pwd)"
-    print_msg "plasma"
-    sudo pacman -S --needed --noconfirm -q kdeplasma-addons
-    print_msg "file explorer : Dolphin"
-    sudo pacman -S --needed --noconfirm -q dolphin dolphin-plugins ark unzip zip
     print_msg 'Pim softwares : mail, calendar, contact, etc'
-    sudo pacman -S --needed --noconfirm -q kmail korganizer kaddressbook kdeconnect kleopatra pidgin pidgin-kwallet spectacle
+    sudo pacman -S --needed --noconfirm -q kmail korganizer kaddressbook kdeconnect pidgin pidgin-kwallet
     sudo pacman -S --needed --noconfirm -q spamassassin razor
     sudo sa-update
 
@@ -343,9 +354,6 @@ alpi_defaultpkgs(){
       cp $_cwd/assets/akonadiserverrc /home/$USER/.config/akonadi/
       print_msg "Akonadi configured to use system wide sql server!"
     fi
-
-    print_msg "web browser, terminal emulator, disk tool, password tool"
-    sudo pacman -S --needed --noconfirm -q chromium terminator gparted keepassx2
 
     print_msg 'install office softwares'
     sudo pacman -S --needed --noconfirm -q gwenview kimageformats kdegraphics-okular kipi-plugins libreoffice-fresh hunspell-{fr,en}
@@ -378,6 +386,7 @@ alpi_defaultpkgs(){
 # LAMP
 alpi_lamp(){
   # https://wiki.archlinux.org/index.php/Apache_HTTP_Server
+  _cwd="$(pwd)"
   print_title "Web Server (apache, php, mysql)"
   print_question "Install apache php mysql? [Y|n] "
   read yn
@@ -397,6 +406,10 @@ alpi_lamp(){
     print-msg "configure vhosts folder"
     sudo mkdir /etc/httpd/conf/vhosts
     sudo sed -i.back 's/^#Include conf\/extra\/httpd-vhosts\.conf$/&\nInclude conf\/vhosts\/*.conf/' /etc/httpd/conf/httpd.conf
+    print_msg "Install Sites folder"
+    mkdir /home/$USER/Sites
+    cp $_cwd/assets/vhosts/dev.conf
+    sudo sed 's/USER/$USER/g' /etc/httpd/conf/vhosts/dev.conf
     print_msg "configure apache for php"
     sudo sed -i.back 's/^LoadModule dir_module modules\/mod_dir\.so$/&\nLoadModule php5_module modules\/libphp5.so/' /etc/httpd/conf/httpd.conf
     sudo sh -c "echo 'Include conf/extra/php5_module.conf' >> /etc/httpd/conf/httpd.conf"
