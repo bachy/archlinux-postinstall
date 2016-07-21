@@ -403,16 +403,23 @@ alpi_lamp(){
     sudo sed -i.back 's/^LoadModule mpm_event_module modules\/mod_mpm_event\.so$/#&/' /etc/httpd/conf/httpd.conf
     sudo sed -i.back 's/^#LoadModule mpm_prefork_module modules\/mod_mpm_prefork\.so$/LoadModule mpm_prefork_module modules\/mod_mpm_prefork.so/' /etc/httpd/conf/httpd.conf
     sudo sed -i.back 's/^#LoadModule rewrite_module modules\/mod_rewrite\.so$/LoadModule rewrite_module modules\/mod_rewrite.so/' /etc/httpd/conf/httpd.conf
+
     print-msg "configure vhosts folder"
     sudo mkdir /etc/httpd/conf/vhosts
     sudo sed -i.back 's/^#Include conf\/extra\/httpd-vhosts\.conf$/&\nInclude conf\/vhosts\/*.conf/' /etc/httpd/conf/httpd.conf
+
     print_msg "Install Sites folder"
     mkdir /home/$USER/Sites
-    cp $_cwd/assets/vhosts/dev.conf
+    sudo cp $_cwd/assets/vhosts/dev.conf /etc/httpd/conf/vhosts/
+    cp $_cwd/assets/index.html /home/$USER/Sites/
+    sudo cp $_cwd/assets/index.html /srv/http/
     sudo sed -i "s/USER/$USER/g" /etc/httpd/conf/vhosts/dev.conf
+    sudo dev -i 's/# End of file/127.0.0.1 dev\n\n&/' /etc/hosts
+
     print_msg "configure apache for php"
-    sudo sed -i.back 's/^LoadModule dir_module modules\/mod_dir\.so$/&\nLoadModule php5_module modules\/libphp5.so/' /etc/httpd/conf/httpd.conf
-    sudo sh -c "echo 'Include conf/extra/php5_module.conf' >> /etc/httpd/conf/httpd.conf"
+    sudo sed -i.back 's/^LoadModule dir_module modules\/mod_dir\.so$/&\nLoadModule php7_module modules\/libphp7.so/' /etc/httpd/conf/httpd.conf
+    sudo sh -c "echo 'Include conf/extra/php7_module.conf' >> /etc/httpd/conf/httpd.conf"
+
     print_msg "configure php"
     sudo sed -i.back 's/^memory_limit.*$/memory_limit = 512M/' /etc/php/php.ini
     sudo sed -i.back 's/^error_reporting.*$/error_reporting = E_ALL \& ~E_NOTICE/' /etc/php/php.ini
@@ -425,6 +432,7 @@ alpi_lamp(){
       read basedir
       sudo sed -i.back "s/^open_basedir = .*$/&:${basedir}/" /etc/php/php.ini
     fi
+
     print_msg "configure php for mysql"
     sudo sed -i.back 's/;extension=pdo_mysql\.so/extension=pdo_mysql.so/' /etc/php/php.ini
 
