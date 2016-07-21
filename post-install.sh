@@ -108,6 +108,13 @@ alpi_basics(){
   fi
 }
 
+alpi_multilib(){
+  # https://wiki.archlinux.org/index.php/Multilib
+  print_msg "Enable Multilib repository package"
+  sudo sed -i.back 's/^#[multilib]$/[multilib]/' /etc/pacman.conf
+  sudo sed -i.back 's/^#Include = \/etc/pacman\.d\/mirrorlist$/Include = /etc/pacman.d/mirrorlis/' /etc/pacman.conf
+  sudo pacman -Syy
+}
 
 alpi_cosmetics(){
   print_title "apply pacman, bash, vim and git config (needs basic pkgs install)"
@@ -476,10 +483,7 @@ alpi_steam(){
   yn=${yn:-y}
   if [ "$yn" == "y" ]; then
     alpi_bumblebee
-    print_msg "Enable Multilib repository package"
-    sudo sed -i.back 's/^#[multilib]$/[multilib]/' /etc/pacman.conf
-    sudo sed -i.back 's/^#Include = \/etc/pacman\.d\/mirrorlist$/Include = /etc/pacman.d/mirrorlis/' /etc/pacman.conf
-    sudo pacman -Syy
+    alpi_multilib
     sudo pacman -S --needed --no-confirm lib32-virtualgl lib32-mesa-libgl lib32-nvidia-utils lib32-alsa-plugins ttf-liberation lib32-curl
     sudo pacman -S --needed --no-confirm steam
   fi
