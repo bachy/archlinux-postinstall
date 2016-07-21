@@ -537,7 +537,7 @@ alpi_menu(){
           alpi_yaourt
           ;;
         9)
-          alpi_yaourt
+          alpi_multilib
           ;;
         10)
           alpi_cups
