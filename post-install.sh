@@ -509,7 +509,7 @@ alpi_menu(){
   do
     print_question "choose an action (preferably in proposed order)"
     echo
-    action_list=("create user" "install basics" "cosmetics" "create gnupgp key" "secure the system" "install Xorg Server" "install Plasma 5 (kde)" "yaourt" "cups (printers)" "switch to LTS kernel" "install default packages" "install lamp" "install bumblebee" "install steam" "end");
+    action_list=("create user" "install basics" "cosmetics" "create gnupgp key" "secure the system" "install Xorg Server" "install Plasma 5 (kde)" "yaourt" "multilib" "cups (printers)" "switch to LTS kernel" "install default packages" "install lamp" "install bumblebee" "install steam" "end");
     select action in "${action_list[@]}"; do
       case "$REPLY" in
         1)
@@ -537,24 +537,27 @@ alpi_menu(){
           alpi_yaourt
           ;;
         9)
-          alpi_cups
+          alpi_yaourt
           ;;
         10)
-          alpi_kernellts
+          alpi_cups
           ;;
         11)
-          alpi_defaultpkgs
+          alpi_kernellts
           ;;
         12)
-          alpi_lamp
+          alpi_defaultpkgs
           ;;
         13)
-          alpi_bumblebee
+          alpi_lamp
           ;;
         14)
-          alpi_steam
+          alpi_bumblebee
           ;;
         15)
+          alpi_steam
+          ;;
+        16)
           alpi_end
           ;;
         *)
