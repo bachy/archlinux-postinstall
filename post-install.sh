@@ -118,7 +118,7 @@ alpi_cosmetics(){
   sudo pacman -S --needed --noconfirm -q vim-{spell-fr,spell-en,nerdtree,supertab,systemd}
   cp -r $_cwp/assets/vim /home/$USER/.vim
   cp $_cwd/assets/vimrc /home/$USER/.vimrc
-  sudo cp $_cwd/assets/vim /root/.vim
+  sudo cp -r $_cwd/assets/vim /root/.vim
   sudo cp $_cwd/assets/vimrc /root/.vimrc
 
   print_msg 'Git Completion'
@@ -147,6 +147,8 @@ alpi_cosmetics(){
 
   print_msg "Bins"
   cp -r $_cwd/assets/bin /home/$USER/.bin
+
+  #DefaultTimeoutStopSec=30s /etc/systemd/system.conf
 
   print_msg 'Config and Cosmetics done'
 }
@@ -195,16 +197,16 @@ alpi_xserver(){
     # touch pad
     sudo pacman -S --needed --noconfirm -q xf86-input-libinput
     # integred gpu
-    sudo pacman -S --needed --noconfirm -q xf86-input-libinput xf86-video-intel
+    sudo pacman -S --needed --noconfirm -q xf86-video-intel
     # discret gpu
-    sudo pacman -S --needed --noconfirm -q bbswitch bumblebee primus
-    sudo pacman -S --needed --noconfirm -q nvidia nvidia-utils
+    # sudo pacman -S --needed --noconfirm -q bbswitch bumblebee primus
+    # sudo pacman -S --needed --noconfirm -q nvidia nvidia-utils
     # xorg server
-    sudo pacman -S --needed --noconfirm -q xorg-xinit xorg-server-devel xorg-xrandr
-    sudo pacman -S --needed --noconfirm -q mesa mesa-demos
+    sudo pacman -S --needed --noconfirm -q xorg-{server,xinit,server-utils,server-devel,xrandr}
+    sudo pacman -S --needed --noconfirm -q mesa mesa-{libgl,demos}
     # config
-    sudo gpasswd -a $USER bumblebee
-    sudo systemctl enable bumblebeed
+    # sudo gpasswd -a $USER bumblebee
+    # sudo systemctl enable bumblebeed
     print_warning "xorg install complete, after reboot, please run part 2 : Desktop manager Plasma5"
     print_warning "press enter to reboot"
     read x
@@ -222,12 +224,14 @@ alpi_plasma5(){
     sudo pacman -S --needed --noconfirm -q ttf-{dejavu,liberation,droid,ubuntu-font-family}
     # network & Bluetooth
     sudo pacman -S --needed --noconfirm -q networkmanager-openvpn pulseaudio-alsa rfkill systemd-kcm bluedevil
-    sudo systemctl enable NetworkManager
-    sudo systemctl start NetworkManager
-    sudo systemctl enable bluetooth
-    sudo systemctl start bluetooth
-    touch /home/$USER/.xinitrc
-    echo 'exec startkde' > /home/$USER/.xinitrc
+    # sudo systemctl enable NetworkManager
+    # sudo systemctl start NetworkManager
+    # sudo systemctl enable bluetooth
+    # sudo systemctl start bluetooth
+    # TODO xinitrc
+    # touch /home/$USER/.xinitrc
+    # cat /etc/X11/xinit/xinitrc > /home/$USER/
+    # echo 'exec startkde' > /home/$USER/.xinitrc
     print_msg "Plasma 5 install complete!"
     print_msg 'run "startx" to start x server with kde plasma 5'
   fi
@@ -271,8 +275,8 @@ alpi_cups(){
     sudo systemctl start org.cups.cupsd
     sudo systemctl enable cups-browsed
     sudo systemctl start cups-browsed
+    sudo gpasswd -a $USER sys
     print_msg "CUPS install complete!"
-    print_warning "add your user to the sys group if you want to be able to add printers"
   fi
 }
 
@@ -307,10 +311,12 @@ alpi_defaultpkgs(){
   yn=${yn:-y}
   if [ "$yn" == "y" ]; then
     _cwd="$(pwd)"
+    print_msg "plasma"
+    sudo pacman -S --needed --noconfirm -q kdeplasma-addons
     print_msg "file explorer : Dolphin"
-    sudo pacman -S --needed --noconfirm -q dolphin dolphin-plugins
+    sudo pacman -S --needed --noconfirm -q dolphin dolphin-plugins ark unzip zip
     print_msg 'Pim softwares : mail, calendar, contact, etc'
-    sudo pacman -S --needed --noconfirm -q kmail korganizer kaddressbook kdeconnect kleopatra pidgin
+    sudo pacman -S --needed --noconfirm -q kmail korganizer kaddressbook kdeconnect kleopatra pidgin pidgin-kwallet spectacle
     sudo pacman -S --needed --noconfirm -q spamassassin razor
     sudo sa-update
 
@@ -431,8 +437,8 @@ alpi_bumblebee(){
     sudo gpasswd -a $USER bumblebee
     sudo systemctl enable bumblebeed
     sudo systemctl start bumblebeed
-    sudo pacman -S --needed --no-confirm mesa-demo
-    print_msg "run optirun glxgears --info to test your install"
+    sudo pacman -S --needed --no-confirm mesa-demos
+    print_msg "run optirun glxgears -info to test your install"
     print_msg "Install primus bridge for better performances"
     sudo pacman -S --needed --no-confirm primus lib32-primus
     sudo sed -i.back 's/^Bridge=auto$/Bridge=primus/' /etc/bumblebee/bumblebee.conf
