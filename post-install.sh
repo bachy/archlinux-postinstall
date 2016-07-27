@@ -103,8 +103,12 @@ alpi_basics(){
     sudo sed -i.back 's/^#PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
     sudo systemctl enable sshd
     sudo systemctl start sshd
+
+    # increase watch limit
+    echo 100000 | sudo tee -a /usr/lib/sysctl.d/50-default.conf
+
     alpi_avahi
-    print_msg "basic packages installed"
+    print_msg "basic packages and configuration installed"
   fi
 }
 
@@ -112,7 +116,7 @@ alpi_multilib(){
   # https://wiki.archlinux.org/index.php/Multilib
   print_msg "Enable Multilib repository package"
   sudo sed -i.back 's/^#[multilib]$/[multilib]/' /etc/pacman.conf
-  sudo sed -i.back 's/^#Include = \/etc/pacman\.d\/mirrorlist$/Include = /etc/pacman.d/mirrorlis/' /etc/pacman.conf
+  sudo sed -i.back 's/^#Include = \/etc/pacman\.d\/mirrorlist$/Include = /etc/pacman.d/mirrorlist/' /etc/pacman.conf
   sudo pacman -Syy
 }
 
