@@ -66,11 +66,12 @@ alpi_user(){
   if [ "$yn" == "y" ]; then
     print_question "Enter user name:"
     read username
+    # TODO: check username inytergrity
     useradd -m -g users -G wheel,sys -s /bin/bash ${username}
     chfn ${username}
     passwd ${username}
     print_msg "user $username created"
-    pacman -S --needed --no-confirm sudo
+    pacman -S --needed --noconfirm sudo
     echo "$username	ALL=(ALL) ALL" >> /etc/sudoers
     print_msg "$username added to sudoers"
     print_question "switch now to $username? you'll have to restart the script [Y|n]"
@@ -211,14 +212,13 @@ alpi_xserver(){
     sudo pacman -S --needed --noconfirm -q xf86-video-intel
     # discret gpu
     # sudo pacman -S --needed --noconfirm -q bbswitch bumblebee primus
-    # sudo pacman -S --needed --noconfirm -q nvidia nvidia-utils
+    # sudo pacman -S --needed --noconfirm -q nvidia nvidia-utils nvidia-libgl
     # xorg server
     sudo pacman -S --needed --noconfirm -q xorg-{server,xinit,server-utils,server-devel,xrandr,xclock} xterm
     sudo pacman -S --needed --noconfirm -q mesa mesa-{libgl,demos}
-    sudo pacman -S --needed --noconfirm -q
     # xinitrc
     touch /home/$USER/.xinitrc
-    cat /etc/X11/xinit/xinitrc > /home/$USER/
+    cat /etc/X11/xinit/xinitrc > /home/$USER/.xinitrc
     print_warning "xorg install complete, reboot and run startx to test xorg"
     print_warning "run part 2 after reboot if you need kde : Desktop manager Plasma5"
     print_warning "press enter to reboot"
