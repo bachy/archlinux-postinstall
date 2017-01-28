@@ -88,7 +88,7 @@ alpi_avahi(){
   sudo pacman -S --needed --noconfirm -q avahi nss-mdns
   print_msg "configure avahi"
   sudo systemctl enable avahi-daemon
-  sudo systemctl start avahi-deamon
+  sudo systemctl start avahi-daemon
   sudo sed -i.back 's/hosts: files dns myhostname/hosts: files mdns_minimal [NOTFOUND=return] dns myhostname/' /etc/nsswitch.conf
 }
 
