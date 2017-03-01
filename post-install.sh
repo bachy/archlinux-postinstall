@@ -125,6 +125,9 @@ alpi_cosmetics(){
   print_title "apply pacman, bash, vim and git config (needs basic pkgs install)"
   alpi_basics
   _cwd="$(pwd)"
+
+  # TODO: can't be launched as root, check before
+
   # vim
   print_msg 'vim configuration'
   sudo pacman -S --needed --noconfirm -q vim-{spell-fr,spell-en,nerdtree,supertab,systemd}
@@ -258,7 +261,7 @@ alpi_plasma5(){
     # echo 'exec startkde' > /home/$USER/.xinitrc
 
     print_msg "Plasma 5 install complete!"
-    print_msg 'add startkde on ~/.xinitrc then run "startx" to start x server with kde plasma 5'
+    print_msg 'add exec startkde on ~/.xinitrc then run "startx" to start x server with kde plasma 5'
   fi
 }
 
@@ -368,6 +371,9 @@ alpi_defaultpkgs(){
 
     print_msg 'install office softwares'
     sudo pacman -S --needed --noconfirm -q gwenview kimageformats kdegraphics-okular kipi-plugins libreoffice-fresh hunspell-{fr,en}
+    # fix theme appearence in kde plasma 5
+    sudo sed -i.back 's/#export SAL_USE_VCLPLUGIN=gtk3/export SAL_USE_VCLPLUGIN=gtk3/' /etc/profile.d/libreoffice-fresh.sh
+    
     print_msg 'install media softwares'
     sudo pacman -S --needed --noconfirm -q digikam darktable vlc lua-socket ktorrent banshee
 
