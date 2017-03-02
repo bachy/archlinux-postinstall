@@ -117,7 +117,7 @@ alpi_multilib(){
   # https://wiki.archlinux.org/index.php/Multilib
   print_msg "Enable Multilib repository package"
   sudo sed -i.back 's/^#[multilib]$/[multilib]/' /etc/pacman.conf
-  sudo sed -i.back 's/^#Include = \/etc/pacman\.d\/mirrorlist$/Include = /etc/pacman.d/mirrorlist/' /etc/pacman.conf
+  sudo sed -i.back 's/^#Include = \/etc\/pacman\.d\/mirrorlist$/Include = /etc/pacman.d/mirrorlist/' /etc/pacman.conf
   sudo pacman -Syy
 }
 
@@ -373,9 +373,10 @@ alpi_defaultpkgs(){
     sudo pacman -S --needed --noconfirm -q gwenview kimageformats kdegraphics-okular kipi-plugins libreoffice-fresh hunspell-{fr,en}
     # fix theme appearence in kde plasma 5
     sudo sed -i.back 's/#export SAL_USE_VCLPLUGIN=gtk3/export SAL_USE_VCLPLUGIN=gtk3/' /etc/profile.d/libreoffice-fresh.sh
-    
+
     print_msg 'install media softwares'
-    sudo pacman -S --needed --noconfirm -q digikam darktable vlc lua-socket ktorrent banshee
+    sudo pacman -S --needed --noconfirm -q digikam darktable vlc lua-socket ktorrent
+    #  banshee is on aur
 
     print_msg 'install graphic softwares'
     sudo pacman -S --needed --noconfirm -q inkscape gimp scribus fontforge blender
@@ -389,10 +390,12 @@ alpi_defaultpkgs(){
     sleep 3
     sudo cp $_cwd/assets/90-inotify.conf /etc/sysctl.d/
 
+    print_msg 'install dev softwares'
+    sudo pacman -S --needed --noconfirm -q atom
+
     if [ -f /usr/bin/yaourt ];
       then
         yaourt -S downgrade
-        yaourt -S atom-editor
         yaourt -S pulseaudio-dlna
       else
         print_warning "some packages can't be installed because you don't have yaourt installed"
