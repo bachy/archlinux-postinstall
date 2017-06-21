@@ -217,7 +217,7 @@ alpi_xserver(){
     # sudo pacman -S --needed --noconfirm -q bbswitch bumblebee primus
     # sudo pacman -S --needed --noconfirm -q nvidia nvidia-utils nvidia-libgl
     # xorg server
-    sudo pacman -S --needed --noconfirm -q xorg-{server,xinit,server-utils,server-devel,xrandr,xclock} xterm
+    sudo pacman -S --needed --noconfirm -q xorg-{server,xinit,apps,server-devel,xrandr,xclock} xterm
     sudo pacman -S --needed --noconfirm -q mesa mesa-{libgl,demos}
     # xinitrc
     touch /home/$USER/.xinitrc
@@ -434,7 +434,7 @@ alpi_lamp(){
     cp $_cwd/assets/index.html /home/$USER/Sites/
     sudo cp $_cwd/assets/index.html /srv/http/
     sudo sed -i "s/USER/$USER/g" /etc/httpd/conf/vhosts/dev.conf
-    sudo dev -i 's/# End of file/127.0.0.1 dev\n\n&/' /etc/hosts
+    sudo sed -i 's/# End of file/127.0.0.1 dev\n\n&/' /etc/hosts
 
     print_msg "configure apache for php"
     sudo sed -i.back 's/^LoadModule dir_module modules\/mod_dir\.so$/&\nLoadModule php7_module modules\/libphp7.so/' /etc/httpd/conf/httpd.conf
