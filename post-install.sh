@@ -241,7 +241,7 @@ alpi_plasma5(){
     print_msg "fonts"
     sudo pacman -S --needed --noconfirm -q ttf-{dejavu,liberation,droid,ubuntu-font-family}
     print_msg "network & Bluetooth"
-    sudo pacman -S --needed --noconfirm -q networkmanager-openvpn pulseaudio-alsa rfkill systemd-kcm bluedevil
+    sudo pacman -S --needed --noconfirm -q networkmanager-openvpn pulseaudio-alsa pulseaudio-bluetooth rfkill systemd-kcm bluedevil
 
     print_msg "plasma addons"
     sudo pacman -S --needed --noconfirm -q kdeplasma-addons
