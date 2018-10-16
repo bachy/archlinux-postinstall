@@ -241,7 +241,9 @@ alpi_plasma5(){
     print_msg "fonts"
     sudo pacman -S --needed --noconfirm -q ttf-{dejavu,liberation,droid,ubuntu-font-family}
     print_msg "network & Bluetooth"
-    sudo pacman -S --needed --noconfirm -q networkmanager-openvpn pulseaudio-alsa pulseaudio-bluetooth rfkill systemd-kcm bluedevil
+    sudo pacman -S --needed --noconfirm -q networkmanager-openvpn pulseaudio-alsa pulseaudio-bluetooth rfkill  bluedevil
+    # yaourt -S --needed --noconfirm -q systemd-kcm
+
 
     print_msg "plasma addons"
     sudo pacman -S --needed --noconfirm -q kdeplasma-addons
@@ -249,6 +251,7 @@ alpi_plasma5(){
     sudo pacman -S --needed --noconfirm -q dolphin dolphin-plugins ark unzip zip
     print_msg 'kleopatra and spectacle'
     sudo pacman -S --needed --noconfirm -q kleopatra spectacle
+    # TODO these should go on alpi_defaultpkgs instead of alpi_plasma5
     print_msg "web browser, terminal emulator, disk tool, password tool"
     sudo pacman -S --needed --noconfirm -q chromium terminator gparted keepassx2
 
@@ -340,8 +343,10 @@ alpi_defaultpkgs(){
   yn=${yn:-y}
   if [ "$yn" == "y" ]; then
     _cwd="$(pwd)"
-    print_msg 'Pim softwares : mail, calendar, contact, etc'
-    sudo pacman -S --needed --noconfirm -q kmail korganizer kaddressbook kdeconnect pidgin pidgin-kwallet
+    print_msg 'Pim softwares : mail, calendar, contact, xmpp, etc'
+    sudo pacman -S --needed --noconfirm -q kmail korganizer kaddressbook kdeconnect gajim
+    yaourt -S gajim-plugin-omemo
+    # TODO need more works to let omemo plugin works on gajim
     sudo pacman -S --needed --noconfirm -q spamassassin razor
     sudo sa-update
 
@@ -370,7 +375,7 @@ alpi_defaultpkgs(){
     fi
 
     print_msg 'install office softwares'
-    sudo pacman -S --needed --noconfirm -q gwenview kimageformats kdegraphics-okular kipi-plugins libreoffice-fresh hunspell-{fr,en}
+    sudo pacman -S --needed --noconfirm -q gwenview kimageformats okular kipi-plugins libreoffice-fresh hunspell-{fr,en_US,en_GB}
     # fix theme appearence in kde plasma 5
     sudo sed -i.back 's/#export SAL_USE_VCLPLUGIN=gtk3/export SAL_USE_VCLPLUGIN=gtk3/' /etc/profile.d/libreoffice-fresh.sh
 
@@ -379,7 +384,7 @@ alpi_defaultpkgs(){
     #  banshee is on aur
 
     print_msg 'install graphic softwares'
-    sudo pacman -S --needed --noconfirm -q inkscape gimp scribus fontforge blender
+    sudo pacman -S --needed --noconfirm -q inkscape gimp scribus fontforge blender hyphen-{fr,en,de,es,it,nl,hu,pl,ro}
 
     print_msg 'web dev softwares'
     sudo pacman -S --needed --noconfirm -q firefox filezilla gulp
