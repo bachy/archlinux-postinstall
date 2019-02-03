@@ -213,6 +213,8 @@ alpi_xserver(){
     sudo pacman -S --needed --noconfirm -q xf86-input-libinput
     # integred gpu
     sudo pacman -S --needed --noconfirm -q xf86-video-intel
+    # https://bbs.archlinux.org/viewtopic.php?pid=1533863#p1533863
+    sudo cp $_cwd/assets/20-intel.conf /etc/X11/xorg.conf.d/
     # discret gpu
     # sudo pacman -S --needed --noconfirm -q bbswitch bumblebee primus
     # sudo pacman -S --needed --noconfirm -q nvidia nvidia-utils nvidia-libgl
